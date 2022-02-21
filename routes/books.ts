@@ -1,5 +1,7 @@
 import { Router, Request, Response } from 'express';
-import { read } from '../utils';
+import { read, write } from '../utils';
+import Book from '../interfaces/Book';
+import validationBook from '../middlewares/validateBook';
 import StatusCode from '../enums/StatusCode';
 
 const router = Router();
@@ -23,8 +25,13 @@ router.get('/:isbn', async (req: Request, res: Response) => {
 
 });
 
-router.post('/', (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
+  const book: Book = req.body;
 
+  const books = await read();
+  books.push(book);
+  await write(books);
+  res.status(StatusCode.CREATED).json(book);
 });
 
 router.put('/', (req: Request, res: Response) => {

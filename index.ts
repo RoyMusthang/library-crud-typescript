@@ -5,6 +5,8 @@ import books from './routes/books';
 
 const app = express();
 
+app.use(express.json())
+
 const PORT = 8000;
 
 app.get('/', (_req, res) => {
