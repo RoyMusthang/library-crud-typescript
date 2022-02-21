@@ -6,7 +6,6 @@ const router = Router();
 const NotFoundMessage = "Livro não encontrado."
 
 router.get('/', async (req: Request, res: Response) => {
-  const data = await fs.readFile('./books.json', 'utf8');
   const books = await read();
   return res.status(200).json(books);
 });
@@ -14,12 +13,13 @@ router.get('/', async (req: Request, res: Response) => {
 router.get('/:isbn', async (req: Request, res: Response) => {
   const { isbn } = req.params;
 
-  const data = await fs.readFile('./books.json', 'utf8');
+  const books = await read();
 
-  const books: Book[] = JSON.parse(data);
   const book = books.find(book => book.isbn === isbn);
 
-  book ? res.status(200).json(book) : res.status(404).json(NotFoundMessage);
+  if (!book) return res.status(StatusCode.NOT_FOUND).json(NotFoundMessage);
+
+  return res.status(StatusCode.OK).json(book);
 
 });
 
