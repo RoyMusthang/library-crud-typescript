@@ -25,7 +25,7 @@ router.get('/:isbn', async (req: Request, res: Response) => {
 
 });
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', validationBook, async (req: Request, res: Response) => {
   const book: Book = req.body;
 
   const books = await read();
