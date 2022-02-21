@@ -1,16 +1,25 @@
 import { Router, Request, Response } from 'express';
-import fs from 'fs/promises';
-import Book from '../interfaces/Book';
+import { read } from '../utils';
+import StatusCode from '../enums/StatusCode';
 
 const router = Router();
+const NotFoundMessage = "Livro não encontrado."
 
 router.get('/', async (req: Request, res: Response) => {
   const data = await fs.readFile('./books.json', 'utf8');
-  const books: Book[] = await JSON.parse(data);
+  const books = await read();
   return res.status(200).json(books);
 });
 
-router.get('/:isbn', (req: Request, res: Response) => {
+router.get('/:isbn', async (req: Request, res: Response) => {
+  const { isbn } = req.params;
+
+  const data = await fs.readFile('./books.json', 'utf8');
+
+  const books: Book[] = JSON.parse(data);
+  const book = books.find(book => book.isbn === isbn);
+
+  book ? res.status(200).json(book) : res.status(404).json(NotFoundMessage);
 
 });
 
