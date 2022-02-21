@@ -42,7 +42,7 @@ router.put('/', validationBook, async (req: Request, res: Response) => {
 
   const index = books.findIndex(book => book.isbn === isbn);
 
-  if (index === -1) return res.status(StatusCode.NOT_FOUND).send(NotFoundMessage);
+  if (index === -1) return res.status(StatusCode.NOT_FOUND).json({ message: NotFoundMessage });
 
   books.splice(index, 1, editedBook);
   await write(books);
@@ -50,8 +50,17 @@ router.put('/', validationBook, async (req: Request, res: Response) => {
   return res.status(StatusCode.OK).json(editedBook);
 })
 
-router.delete('/:isbn', (req: Request, res: Response) => {
+router.delete('/:isbn', async (req: Request, res: Response) => {
+  const { isbn } = req.params;
+  const books = await read();
 
+  const index = books.findIndex(book => book.isbn === isbn);
+  if (index === -1) return res.status(StatusCode.NOT_FOUND).json({ message: NotFoundMessage });
+
+  books.slice(index, 1);
+  await write(books);
+
+  return res.status(StatusCode.NO_CONTENT).send();
 })
 
 export default router;
